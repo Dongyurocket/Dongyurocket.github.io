@@ -1,5 +1,12 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { extname, join, relative, resolve } from 'node:path';
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs';
+import { dirname, extname, join, relative, resolve } from 'node:path';
 
 const root = process.cwd();
 const contentDir = resolve(root, 'src/content/blog');
@@ -68,6 +75,50 @@ function rewriteLinks(markdown) {
     .replaceAll(/src="(\/[^"]+)"/g, `src="${siteUrl}$1"`);
 }
 
+function isRelativeAssetPath(path) {
+  return (
+    path &&
+    !path.startsWith('http://') &&
+    !path.startsWith('https://') &&
+    !path.startsWith('/') &&
+    !path.startsWith('#') &&
+    !path.startsWith('data:')
+  );
+}
+
+function copyRelativeAssets(markdown, sourcePath, outputPath, warnings) {
+  const sourceDir = dirname(sourcePath);
+  const outputDirForFile = dirname(outputPath);
+
+  const copyAsset = (assetPath) => {
+    if (!isRelativeAssetPath(assetPath)) {
+      return assetPath;
+    }
+
+    const cleanPath = assetPath.split('?')[0].split('#')[0];
+    const absoluteSourcePath = resolve(sourceDir, cleanPath);
+    if (!existsSync(absoluteSourcePath)) {
+      warnings.push(`相对资源未找到：${assetPath}`);
+      return assetPath;
+    }
+
+    const absoluteOutputPath = resolve(outputDirForFile, cleanPath);
+    mkdirSync(dirname(absoluteOutputPath), { recursive: true });
+    copyFileSync(absoluteSourcePath, absoluteOutputPath);
+    return assetPath.replaceAll('\\', '/');
+  };
+
+  return markdown
+    .replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, (full, alt, assetPath) => {
+      const nextPath = copyAsset(assetPath);
+      return full.replace(assetPath, nextPath);
+    })
+    .replace(/src="([^"]+)"/g, (full, assetPath) => {
+      const nextPath = copyAsset(assetPath);
+      return full.replace(assetPath, nextPath);
+    });
+}
+
 function transformMdx(markdown, warnings) {
   let output = markdown
     .replace(/^\s*import\s.+$/gm, '')
@@ -102,14 +153,20 @@ const source = readFileSync(sourcePath, 'utf8');
 const { data, body } = parseFrontmatter(source);
 const warnings = [];
 const isMdx = extname(sourcePath) === '.mdx';
-const transformedBody = rewriteLinks(transformMdx(body, warnings)).trim();
 const relativeWithoutExt = relative(contentDir, sourcePath.slice(0, -extname(sourcePath).length)).replaceAll('\\', '/');
 const title = data.wechatTitle || data.title || relativeWithoutExt;
 const digest = data.wechatDigest || data.description || '';
 const permalink = `${siteUrl}/blog/${relativeWithoutExt}/`;
 
 mkdirSync(outputDir, { recursive: true });
-const outputPath = resolve(outputDir, `${relativeWithoutExt.replaceAll('/', '--')}.md`);
+const outputPath = resolve(outputDir, `${relativeWithoutExt}.md`);
+mkdirSync(dirname(outputPath), { recursive: true });
+const transformedBody = copyRelativeAssets(
+  rewriteLinks(transformMdx(body, warnings)).trim(),
+  sourcePath,
+  outputPath,
+  warnings,
+);
 const output = [
   `# ${title}`,
   '',

@@ -476,7 +476,11 @@ $$
 
 ### 网站图片
 
-静态图片建议放在：
+现在推荐两种图片组织方式：
+
+#### 方式 A：站点公共图片
+
+这类图片建议放在：
 
 ```text
 public/
@@ -493,6 +497,35 @@ public/illustrations/knowledge-orbit.svg
 ```md
 ![插图说明](/illustrations/knowledge-orbit.svg)
 ```
+
+这种方式适合：
+
+- 多篇文章共用的插图
+- 首页 / 关于页 / 站点级图片
+- 希望直接通过网站根路径访问的静态资源
+
+#### 方式 B：文章私有相对图片
+
+如果图片只属于某一篇文章，推荐放在文章旁边的资源目录中。
+
+例如：
+
+```text
+src/content/blog/rich-notes-example.md
+src/content/blog/rich-notes-example-files/notebook-workflow.svg
+```
+
+正文里这样引用：
+
+```md
+![研究笔记工作流示意图](./rich-notes-example-files/notebook-workflow.svg)
+```
+
+这种方式适合：
+
+- 单篇文章自己的配图
+- 研究笔记里的结构图、实验截图、局部说明图
+- 希望“文章和资源放在一起管理”的场景
 
 ### 公众号图片建议
 
@@ -571,7 +604,22 @@ exports/wechat/markdown-and-search.md
 - 使用 `wechatTitle` 或 `title` 作为标题
 - 使用 `wechatDigest` 或 `description` 作为摘要
 - 把站内根路径链接改为线上绝对地址
+- 自动复制文章中的相对图片资源
 - 在文末添加原文链接
+
+例如原文里这样写：
+
+```md
+![图示](./rich-notes-example-files/notebook-workflow.svg)
+```
+
+导出时会自动把图片复制到：
+
+```text
+exports/wechat/rich-notes-example-files/notebook-workflow.svg
+```
+
+并在导出的 Markdown 中继续保留相对引用。
 
 ### 对 MDX 的处理
 
@@ -852,6 +900,7 @@ npm run export:wechat -- writing-system
 - `src/content/blog/welcome.md`
 - `src/content/blog/markdown-and-search.md`
 - `src/content/blog/latex-demo.md`
+- `src/content/blog/rich-notes-example.md`
 
 这些示例展示了：
 
@@ -859,6 +908,7 @@ npm run export:wechat -- writing-system
 - Markdown 驱动博客的写法
 - 公式写法
 - 公众号友好字段的使用方式
+- 相对图片资源的写法
 
 ---
 
@@ -935,4 +985,3 @@ npm run preview
 这个项目最适合的使用方式不是“做一个漂亮首页就结束”，而是：
 
 > **把它当成一套长期写作与多端发布系统，用 Markdown 沉淀内容，用网站做归档和检索，用导出流程服务微信公众号。**
-
