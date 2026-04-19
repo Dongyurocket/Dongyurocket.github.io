@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import 'katex/dist/katex.min.css';
-import { NAV_LINKS, SITE_DESCRIPTION, SITE_TITLE } from '../lib/site';
+import { AUTHOR, NAV_LINKS, SITE_DESCRIPTION, SITE_TITLE } from '../lib/site';
 
 interface Props {
   title?: string;
@@ -60,8 +60,16 @@ const isActivePath = (href: string) =>
 
     <footer class="site-footer">
       <div class="shell footer-inner">
-        <p>{SITE_TITLE}</p>
-        <p>{SITE_DESCRIPTION}</p>
+        <div>
+          <p>{SITE_TITLE}</p>
+          <p>{SITE_DESCRIPTION}</p>
+        </div>
+        <div>
+          <p>{AUTHOR.name}</p>
+          <p>
+            <a href={AUTHOR.github} target="_blank" rel="noreferrer">GitHub</a>
+          </p>
+        </div>
       </div>
     </footer>
   </body>

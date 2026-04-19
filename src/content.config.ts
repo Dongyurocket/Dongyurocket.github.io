@@ -10,7 +10,12 @@ const blog = defineCollection({
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     category: z.string(),
+    series: z.string().optional(),
     tags: z.array(z.string()).default([]),
+    featured: z.boolean().default(false),
+    wechatReady: z.boolean().default(true),
+    wechatTitle: z.string().optional(),
+    wechatDigest: z.string().optional(),
     draft: z.boolean().default(false),
   }),
 });
@@ -18,4 +23,3 @@ const blog = defineCollection({
 export const collections = {
   blog,
 };
-

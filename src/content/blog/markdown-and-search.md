@@ -7,6 +7,10 @@ tags:
   - Markdown
   - Astro
   - Pagefind
+featured: true
+wechatReady: true
+wechatTitle: "为什么我要让博客和 Markdown 联动"
+wechatDigest: "把内容留在 Markdown 文件里，网站负责展示与检索，这样更适合长期写作和多端同步。"
 ---
 
 写博客最怕的不是没灵感，而是内容分散在太多地方。
@@ -27,4 +31,3 @@ tags:
 | 版本管理 | 用 Git 追踪所有改动 |
 
 后续我只要继续往 `src/content/blog` 里增加文章，这个站点就会自动长出新的页面。
-

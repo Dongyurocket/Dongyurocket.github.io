@@ -1,0 +1,29 @@
+---
+import { AUTHOR } from '../lib/site';
+
+interface Props {
+  title?: string;
+}
+
+const { title = '关于这个站点' } = Astro.props as Props;
+---
+
+<aside class="author-card">
+  <p class="eyebrow">Author</p>
+  <h2>{title}</h2>
+  <p class="author-name">{AUTHOR.name}</p>
+  <p class="author-role">{AUTHOR.role}</p>
+  <p>{AUTHOR.bio}</p>
+  <ul class="author-meta">
+    <li>位置：{AUTHOR.location}</li>
+    <li>
+      GitHub：
+      <a href={AUTHOR.github} target="_blank" rel="noreferrer">{AUTHOR.github.replace('https://github.com/', '@')}</a>
+    </li>
+    <li>
+      站点：
+      <a href={AUTHOR.site} target="_blank" rel="noreferrer">{AUTHOR.site}</a>
+    </li>
+  </ul>
+</aside>
+

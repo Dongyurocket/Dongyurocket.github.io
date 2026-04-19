@@ -1,0 +1,25 @@
+---
+title: "{{TITLE}}"
+description: "用一句话概括这篇文章的核心内容。"
+pubDate: {{DATE}}
+updatedDate: {{DATE}}
+category: "技术"
+series: "网站专用"
+tags:
+  - MDX
+featured: false
+wechatReady: false
+---
+
+import Callout from '../src/components/Callout.astro';
+
+这是一篇适合网站专用增强效果的 MDX 模板。
+
+<Callout title="提示">
+  如果文章里依赖组件、交互或特殊布局，建议把 `wechatReady` 设为 `false`，不要默认同步到微信公众号。
+</Callout>
+
+## 正文
+
+这里继续写正文。
+

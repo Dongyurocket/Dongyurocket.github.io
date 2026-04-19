@@ -23,6 +23,31 @@ npm run local
 
 Windows 下也可以直接双击根目录里的 `start-local-site.cmd`。
 
+## 长期写作工作流
+
+新建文章：
+
+```bash
+npm run new:post -- "文章标题"
+```
+
+导出公众号版本：
+
+```bash
+npm run export:wechat -- 文章slug
+```
+
+导出的文件会放在：
+
+`exports/wechat`
+
+推荐长期写作方式：
+
+1. 优先使用 `templates/blog-post.md`
+2. 默认写纯 Markdown 正文
+3. 网站负责展示、归档、检索
+4. 公众号通过导出后的 Markdown 再做最终排版
+
 ## GitHub Pages 部署
 
 如果你想用最省事的方式部署，请使用下面这个仓库命名：
@@ -102,7 +127,8 @@ tags:
 
 1. 在 `src/content/blog` 里先写一份纯 Markdown 正文
 2. 本地用网站检查结构、图片和公式
-3. 再把同一份 Markdown 导入公众号 Markdown 编辑器做最终排版
+3. 运行 `npm run export:wechat -- 文章slug`
+4. 再把导出的 Markdown 导入公众号 Markdown 编辑器做最终排版
 
 站内也提供了对应说明页：`/guide/`
 
@@ -137,3 +163,4 @@ $$
 - 把 `src/lib/site.ts` 里的站点标题和描述改成你自己的信息
 - 删除示例文章，换成你自己的内容
 - 如果需要双端同步，优先参考站内 `/guide/` 的写作规范
+- 如果需要长期写作，直接复用 `templates/` 下的文章模板

@@ -2,20 +2,31 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
-import { getVisiblePosts } from '../../lib/blog';
+import { getCategoryCount, getVisiblePosts } from '../../lib/blog';
 
 const posts = getVisiblePosts(await getCollection('blog'));
+const categoryCount = Object.keys(getCategoryCount(posts)).length;
 ---
 
 <BaseLayout title="博客" description="所有文章列表">
   <section class="page-heading">
     <p class="eyebrow">Blog</p>
     <h1>全部文章</h1>
-    <p>这里集中展示所有文章，正文由 Markdown / MDX 直接驱动。</p>
+    <p>这里集中展示所有文章，正文由 Markdown / MDX 直接驱动，也尽量保持对公众号同步友好。</p>
+  </section>
+
+  <section class="stats-grid stats-grid-compact">
+    <article class="stats-card">
+      <strong>{posts.length}</strong>
+      <span>文章总数</span>
+    </article>
+    <article class="stats-card">
+      <strong>{categoryCount}</strong>
+      <span>主题分类</span>
+    </article>
   </section>
 
   <div class="stack-grid">
     {posts.map((post) => <PostCard post={post} />)}
   </div>
 </BaseLayout>
-

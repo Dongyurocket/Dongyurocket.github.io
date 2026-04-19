@@ -1,13 +1,23 @@
 ---
 import { getCollection } from 'astro:content';
+import AuthorCard from '../components/AuthorCard.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import CategoryList from '../components/CategoryList.astro';
-import { getAllCategories, getCategoryCount, getVisiblePosts, slugify } from '../lib/blog';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../lib/site';
+import {
+  getAllCategories,
+  getCategoryCount,
+  getFeaturedPosts,
+  getVisiblePosts,
+  getWechatReadyPosts,
+  slugify,
+} from '../lib/blog';
+import { HOME_HIGHLIGHTS, SITE_DESCRIPTION, SITE_TITLE, WRITING_WORKFLOW } from '../lib/site';
 
 const posts = getVisiblePosts(await getCollection('blog'));
+const featuredPosts = getFeaturedPosts(posts).slice(0, 2);
 const latestPosts = posts.slice(0, 3);
+const wechatReadyCount = getWechatReadyPosts(posts).length;
 const categoryCount = getCategoryCount(posts);
 const categories = getAllCategories(posts).map((name) => ({
   name,
@@ -22,12 +32,12 @@ const categories = getAllCategories(posts).map((name) => ({
       <p class="eyebrow">Markdown 驱动的个人博客</p>
       <h1>用一套站点，同时管理写作、插图、公式和检索。</h1>
       <p class="hero-copy">
-        这个网站基于 Astro 构建，支持 Markdown / MDX 写作、LaTeX 公式渲染、分类归档与全文检索，并默认鼓励使用更适合
-        微信公众号同步的纯 Markdown 写作方式。
+        这个网站基于 Astro 构建，支持 Markdown / MDX 写作、LaTeX 公式渲染、分类归档与全文检索，并默认鼓励使用更适合微信公众号同步的纯 Markdown 写作方式。
       </p>
       <div class="hero-actions">
         <a class="button button-primary" href="/blog/">开始阅读</a>
-        <a class="button button-secondary" href="/guide/">写作规范</a>
+        <a class="button button-secondary" href="/about/">关于我</a>
+        <a class="button button-secondary" href="/wechat/">微信同步</a>
         <a class="button button-secondary" href="/search/">试试检索</a>
       </div>
     </div>
@@ -38,6 +48,60 @@ const categories = getAllCategories(posts).map((name) => ({
       loading="lazy"
     />
   </section>
+
+  <section class="stats-grid">
+    <article class="stats-card">
+      <strong>{posts.length}</strong>
+      <span>已发布文章</span>
+    </article>
+    <article class="stats-card">
+      <strong>{categories.length}</strong>
+      <span>主题分类</span>
+    </article>
+    <article class="stats-card">
+      <strong>{wechatReadyCount}</strong>
+      <span>可同步公众号文章</span>
+    </article>
+  </section>
+
+  <section class="section-block split-layout">
+    <AuthorCard title="这是一个适合长期写作的起点" />
+    <div class="panel-stack">
+      <article class="post-card">
+        <div class="section-heading">
+          <h2>写作节奏</h2>
+          <a href="/guide/">完整规范</a>
+        </div>
+        <ol class="step-list">
+          {WRITING_WORKFLOW.map((step) => <li>{step}</li>)}
+        </ol>
+      </article>
+      <div class="feature-grid">
+        {
+          HOME_HIGHLIGHTS.map((item) => (
+            <article class="feature-card">
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    featuredPosts.length > 0 && (
+      <section class="section-block">
+        <div class="section-heading">
+          <h2>精选文章</h2>
+          <a href="/archives/">查看归档</a>
+        </div>
+        <div class="stack-grid">
+          {featuredPosts.map((post) => <PostCard post={post} />)}
+        </div>
+      </section>
+    )
+  }
 
   <section class="section-block">
     <div class="section-heading">
@@ -60,16 +124,16 @@ const categories = getAllCategories(posts).map((name) => ({
   <section class="section-block">
     <div class="section-heading">
       <h2>双端发布建议</h2>
-      <a href="/guide/">查看规范</a>
+      <a href="/wechat/">查看微信同步流程</a>
     </div>
     <article class="post-card">
       <div class="post-card-meta">
         <span class="chip">公众号友好</span>
         <span>推荐默认做法</span>
       </div>
-      <h2><a href="/guide/">先写纯 Markdown，再分别输出到网站和公众号</a></h2>
+      <h2><a href="/wechat/">先写纯 Markdown，再分别输出到网站和公众号</a></h2>
       <p>
-        默认优先使用 <code>.md</code>、标准标题层级、引用块和常规图片排版；把自定义 MDX 组件和复杂布局留给网站专用文章。
+        默认优先使用 <code>.md</code>、标准标题层级、引用块和常规图片排版；需要同步公众号时，直接运行 <code>npm run export:wechat -- 文章slug</code>。
       </p>
     </article>
   </section>

@@ -45,11 +45,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
       <h2>建议工作流</h2>
       <ol>
-        <li>先在 <code>src/content/blog</code> 里写一份纯 Markdown 正文</li>
+        <li>先运行 <code>npm run new:post -- "文章标题"</code> 生成一份新文章模板</li>
+        <li>在 <code>src/content/blog</code> 里完成一份纯 Markdown 正文</li>
         <li>用本地网站检查结构、图片、分类和公式显示</li>
-        <li>需要发公众号时，再把同一份 Markdown 导入公众号 Markdown 编辑器</li>
+        <li>需要发公众号时，先运行 <code>npm run export:wechat -- 文章slug</code></li>
+        <li>再把导出的 Markdown 导入公众号 Markdown 编辑器</li>
         <li>在公众号后台重新上传图片，并做一次手机端预览</li>
       </ol>
+
+      <h2>现在项目里已经有的工具</h2>
+      <ul>
+        <li><code>templates/blog-post.md</code>：适合长期写作和公众号同步的默认文章模板</li>
+        <li><code>templates/blog-post.mdx</code>：适合网站专用增强效果的模板</li>
+        <li><code>scripts/new-post.mjs</code>：生成新文章草稿</li>
+        <li><code>scripts/export-wechat.mjs</code>：导出公众号友好的 Markdown 版本</li>
+      </ul>
 
       <h2>网站专用内容怎么处理</h2>
       <p>
@@ -62,4 +72,3 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
   </article>
 </BaseLayout>
-

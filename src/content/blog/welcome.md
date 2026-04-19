@@ -6,6 +6,10 @@ category: "随笔"
 tags:
   - 博客
   - 开始
+featured: true
+wechatReady: true
+wechatTitle: "给博客一个舒服的开始"
+wechatDigest: "从这篇欢迎文章开始，把个人网站逐步整理成一个长期可写、可查、可同步的知识花园。"
 ---
 
 欢迎来到我的个人网站。
@@ -22,4 +26,3 @@ tags:
 - 用分类和检索快速找回过去写过的内容
 
 如果你已经有一堆 Markdown 文档，也完全可以把它们逐步迁移进来。这个站点本身就是 Markdown 驱动的，所以内容和页面天然保持同步。
-

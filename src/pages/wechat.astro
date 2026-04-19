@@ -1,0 +1,57 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getVisiblePosts, getWechatReadyPosts } from '../lib/blog';
+import { WECHAT_SYNC_RULES } from '../lib/site';
+
+const posts = getVisiblePosts(await getCollection('blog'));
+const wechatPosts = getWechatReadyPosts(posts);
+---
+
+<BaseLayout title="微信同步" description="把博客内容更顺畅地同步到微信公众号">
+  <article class="article-shell">
+    <header class="article-header">
+      <span class="chip">WeChat Sync</span>
+      <h1>博客与微信公众号同步</h1>
+      <p class="article-description">
+        这里不是单纯的写作建议，而是一套可以直接用起来的工作流：同一份正文服务网站，再导出为公众号友好的 Markdown。
+      </p>
+    </header>
+
+    <div class="article-content">
+      <h2>推荐命令</h2>
+      <pre><code>npm run new:post -- "文章标题"</code></pre>
+      <pre><code>npm run export:wechat -- 文章slug</code></pre>
+
+      <h2>默认规则</h2>
+      <ul>
+        {WECHAT_SYNC_RULES.map((rule) => <li>{rule}</li>)}
+      </ul>
+
+      <h2>导出会帮你做什么</h2>
+      <ul>
+        <li>移除 frontmatter，只保留适合公众号编辑器的正文</li>
+        <li>自动补上标题与摘要</li>
+        <li>把站内根路径链接改成公开站点的绝对地址</li>
+        <li>把文件输出到 <code>exports/wechat</code></li>
+      </ul>
+
+      <h2>当前适合同步的文章</h2>
+      <div class="stack-grid">
+        {
+          wechatPosts.map((post) => (
+            <article class="post-card">
+              <div class="post-card-meta">
+                <span class="chip chip-neutral">公众号友好</span>
+                <span>{post.id}</span>
+              </div>
+              <h3>{post.data.title}</h3>
+              <p>{post.data.description}</p>
+              <pre><code>{`npm run export:wechat -- ${post.id}`}</code></pre>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </article>
+</BaseLayout>

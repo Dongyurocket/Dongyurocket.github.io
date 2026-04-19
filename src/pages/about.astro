@@ -1,0 +1,47 @@
+---
+import AuthorCard from '../components/AuthorCard.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { HOME_HIGHLIGHTS, WRITING_WORKFLOW } from '../lib/site';
+---
+
+<BaseLayout title="关于" description="关于作者、站点定位和长期写作方式">
+  <section class="split-layout">
+    <AuthorCard title="关于我" />
+    <article class="article-shell">
+      <header class="article-header">
+        <p class="eyebrow">About</p>
+        <h1>把博客当作长期积累，而不是一次性发布</h1>
+        <p class="article-description">
+          这个站点更像一套长期写作系统：既能沉淀技术与研究内容，也能兼顾公众号同步与长期检索。
+        </p>
+      </header>
+      <div class="article-content">
+        <h2>这个站点适合写什么</h2>
+        <ul>
+          <li>研究笔记与公式推导</li>
+          <li>项目复盘与技术总结</li>
+          <li>阶段性阅读记录与思考</li>
+          <li>适合长期积累的专题文章</li>
+        </ul>
+
+        <h2>我希望它具备的能力</h2>
+        <div class="feature-grid">
+          {
+            HOME_HIGHLIGHTS.map((item) => (
+              <article class="feature-card">
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))
+          }
+        </div>
+
+        <h2>推荐写作节奏</h2>
+        <ol class="step-list">
+          {WRITING_WORKFLOW.map((step) => <li>{step}</li>)}
+        </ol>
+      </div>
+    </article>
+  </section>
+</BaseLayout>
+
