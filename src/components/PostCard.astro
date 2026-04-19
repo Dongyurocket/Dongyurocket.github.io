@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate, slugify } from '../lib/blog';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props as Props;
+---
+
+<article class="post-card">
+  <div class="post-card-meta">
+    <a class="chip chip-link" href={`/categories/${slugify(post.data.category)}/`}>
+      {post.data.category}
+    </a>
+    <time datetime={post.data.pubDate.toISOString()}>
+      {formatDate(post.data.pubDate)}
+    </time>
+  </div>
+  <h2>
+    <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+  </h2>
+  <p>{post.data.description}</p>
+  {
+    post.data.tags.length > 0 && (
+      <ul class="tag-list" aria-label="标签">
+        {post.data.tags.map((tag) => <li class="chip">{tag}</li>)}
+      </ul>
+    )
+  }
+</article>
+

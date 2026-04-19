@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="写作规范" description="默认兼容微信公众号的博客写作规范">
+  <article class="article-shell">
+    <header class="article-header">
+      <span class="chip">公众号友好</span>
+      <h1>默认兼容微信公众号的写作规范</h1>
+      <p class="article-description">
+        目标是尽量用同一份 Markdown，同时服务个人网站和微信公众号，减少重复排版。
+      </p>
+    </header>
+
+    <div class="article-content">
+      <h2>默认原则</h2>
+      <ul>
+        <li>优先使用 <code>.md</code>，只在明确需要网站专属效果时才使用 <code>.mdx</code></li>
+        <li>优先使用标准 Markdown：标题、段落、列表、引用、图片、代码块</li>
+        <li>提示信息优先写成引用块，而不是自定义组件</li>
+        <li>标题层级尽量控制在三级以内，保持手机阅读清晰</li>
+        <li>图片尽量一图一意，宽表格和超长代码块尽量少用</li>
+        <li>公式尽量保持简洁，复杂公式发公众号前建议手机预览一次</li>
+      </ul>
+
+      <h2>推荐写法</h2>
+      <p>更适合双端同步的内容通常长这样：</p>
+      <ul>
+        <li>清晰标题</li>
+        <li>简短摘要</li>
+        <li>几段连续正文</li>
+        <li>必要时加一张配图</li>
+        <li>使用引用块补充说明</li>
+        <li>公式和列表尽量保持简洁</li>
+      </ul>
+
+      <h2>尽量少用的内容</h2>
+      <ul>
+        <li>自定义 MDX 组件</li>
+        <li>交互式组件</li>
+        <li>依赖站点 CSS 的复杂卡片布局</li>
+        <li>很宽的大表格</li>
+        <li>很长的代码块和并排图文混排</li>
+      </ul>
+
+      <h2>建议工作流</h2>
+      <ol>
+        <li>先在 <code>src/content/blog</code> 里写一份纯 Markdown 正文</li>
+        <li>用本地网站检查结构、图片、分类和公式显示</li>
+        <li>需要发公众号时，再把同一份 Markdown 导入公众号 Markdown 编辑器</li>
+        <li>在公众号后台重新上传图片，并做一次手机端预览</li>
+      </ol>
+
+      <h2>网站专用内容怎么处理</h2>
+      <p>
+        如果你确实需要更复杂的排版，可以继续使用 MDX 或 Astro 组件，但建议把它们视为“网站专用增强”，不要默认要求与公众号保持一致。
+      </p>
+
+      <blockquote>
+        一句话版本：默认写纯 Markdown，网站和公众号共用正文；只有在明确需要时，再增加网站专用效果。
+      </blockquote>
+    </div>
+  </article>
+</BaseLayout>
+

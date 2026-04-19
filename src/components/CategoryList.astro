@@ -1,0 +1,25 @@
+---
+interface Props {
+  categories: {
+    name: string;
+    count: number;
+    slug: string;
+  }[];
+}
+
+const { categories } = Astro.props as Props;
+---
+
+<ul class="category-grid">
+  {
+    categories.map((category) => (
+      <li class="category-card">
+        <a href={`/categories/${category.slug}/`}>
+          <span class="category-name">{category.name}</span>
+          <span class="category-count">{category.count} 篇</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+

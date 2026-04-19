@@ -1,0 +1,68 @@
+---
+import '../styles/global.css';
+import 'katex/dist/katex.min.css';
+import { NAV_LINKS, SITE_DESCRIPTION, SITE_TITLE } from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = SITE_TITLE,
+  description = SITE_DESCRIPTION,
+} = Astro.props as Props;
+
+const pageTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : Astro.url.toString();
+const isActivePath = (href: string) =>
+  href === '/' ? Astro.url.pathname === '/' : Astro.url.pathname.startsWith(href);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark">✦</span>
+          <span>{SITE_TITLE}</span>
+        </a>
+        <nav class="main-nav" aria-label="主导航">
+          {
+            NAV_LINKS.map((link) => (
+              <a
+                class:list={[
+                  'nav-link',
+                  isActivePath(link.href) && 'is-active',
+                ]}
+                href={link.href}
+              >
+                {link.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </header>
+
+    <main class="shell page-shell">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <p>{SITE_TITLE}</p>
+        <p>{SITE_DESCRIPTION}</p>
+      </div>
+    </footer>
+  </body>
+</html>

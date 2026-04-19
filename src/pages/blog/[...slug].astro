@@ -1,0 +1,52 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate, getVisiblePosts, slugify } from '../../lib/blog';
+
+export async function getStaticPaths() {
+  const posts = getVisiblePosts(await getCollection('blog'));
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const publishDate = formatDate(post.data.pubDate);
+const updateDate = post.data.updatedDate ? formatDate(post.data.updatedDate) : null;
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <head>
+    <meta data-pagefind-meta="category[content]" content={post.data.category} />
+    <meta data-pagefind-meta="date[content]" content={post.data.pubDate.toISOString()} />
+    <meta data-pagefind-filter="category[content]" content={post.data.category} />
+    {post.data.tags.map((tag) => <meta data-pagefind-filter="tag[content]" content={tag} />)}
+  </head>
+
+  <article class="article-shell" data-pagefind-body>
+    <header class="article-header">
+      <a class="chip chip-link" href={`/categories/${slugify(post.data.category)}/`}>
+        {post.data.category}
+      </a>
+      <h1 data-pagefind-meta="title">{post.data.title}</h1>
+      <p class="article-description">{post.data.description}</p>
+      <div class="article-meta">
+        <time datetime={post.data.pubDate.toISOString()}>发布于 {publishDate}</time>
+        {updateDate && <span>更新于 {updateDate}</span>}
+      </div>
+      {
+        post.data.tags.length > 0 && (
+          <ul class="tag-list" aria-label="标签">
+            {post.data.tags.map((tag) => <li class="chip">{tag}</li>)}
+          </ul>
+        )
+      }
+    </header>
+
+    <div class="article-content">
+      <Content components={{}} />
+    </div>
+  </article>
+</BaseLayout>

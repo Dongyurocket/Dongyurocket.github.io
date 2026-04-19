@@ -1,0 +1,158 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllCategories, getVisiblePosts } from '../lib/blog';
+
+const posts = getVisiblePosts(await getCollection('blog'));
+const categories = getAllCategories(posts);
+const pagefindPath = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
+---
+
+<BaseLayout title="检索" description="全文检索与分类过滤">
+  <section class="page-heading">
+    <p class="eyebrow">Search</p>
+    <h1>全文检索</h1>
+    <p>支持关键词搜索，也可以按分类进一步缩小结果范围。</p>
+  </section>
+
+  <section class="search-panel">
+    <div class="search-controls">
+      <label class="field">
+        <span>关键词</span>
+        <input
+          id="search-input"
+          type="search"
+          name="q"
+          placeholder="输入标题、正文或标签中的关键词"
+          autocomplete="off"
+        />
+      </label>
+
+      <label class="field">
+        <span>分类</span>
+        <select id="search-category" name="category">
+          <option value="">全部分类</option>
+          {categories.map((category) => <option value={category}>{category}</option>)}
+        </select>
+      </label>
+    </div>
+
+    <p class="search-status" id="search-status">
+      正在准备搜索索引……
+    </p>
+    <div class="search-results" id="search-results"></div>
+  </section>
+
+  <script type="module" define:vars={{ pagefindPath }}>
+    const input = document.querySelector('#search-input');
+    const categorySelect = document.querySelector('#search-category');
+    const status = document.querySelector('#search-status');
+    const results = document.querySelector('#search-results');
+    const params = new URLSearchParams(window.location.search);
+    const initialQuery = params.get('q') ?? '';
+    const initialCategory = params.get('category') ?? '';
+    let timer;
+    let pagefind;
+
+    input.value = initialQuery;
+    categorySelect.value = initialCategory;
+
+    const escapeHtml = (value) =>
+      value
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+
+    const renderResults = (items) => {
+      results.innerHTML = items
+        .map((item) => {
+          const title = escapeHtml(item.meta.title ?? '未命名文章');
+          const category = escapeHtml(item.meta.category ?? '未分类');
+          const excerpt = item.excerpt ?? '';
+          const date = item.meta.date
+            ? new Date(item.meta.date).toLocaleDateString('zh-CN')
+            : '';
+
+          return `
+            <article class="search-card">
+              <div class="search-card-meta">
+                <span class="chip">${category}</span>
+                ${date ? `<time>${date}</time>` : ''}
+              </div>
+              <h2><a href="${item.url}">${title}</a></h2>
+              <p>${excerpt}</p>
+            </article>
+          `;
+        })
+        .join('');
+    };
+
+    const syncURL = () => {
+      const nextParams = new URLSearchParams();
+      if (input.value.trim()) nextParams.set('q', input.value.trim());
+      if (categorySelect.value) nextParams.set('category', categorySelect.value);
+      const next = nextParams.toString();
+      history.replaceState({}, '', next ? `?${next}` : window.location.pathname);
+    };
+
+    const runSearch = async () => {
+      const query = input.value.trim() || null;
+      const category = categorySelect.value;
+
+      syncURL();
+
+      if (!pagefind) {
+        return;
+      }
+
+      if (!query && !category) {
+        results.innerHTML = '';
+        status.textContent = '输入关键词，或者直接选择一个分类开始检索。';
+        return;
+      }
+
+      status.textContent = '正在检索……';
+      const search = await pagefind.search(query, {
+        filters: category ? { category } : undefined,
+      });
+
+      if (search.results.length === 0) {
+        results.innerHTML = '';
+        status.textContent = '没有找到匹配结果。';
+        return;
+      }
+
+      const data = await Promise.all(search.results.slice(0, 20).map((entry) => entry.data()));
+      renderResults(data);
+      status.textContent = `找到 ${search.results.length} 条结果，当前展示前 ${Math.min(search.results.length, 20)} 条。`;
+    };
+
+    const debounceSearch = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        void runSearch();
+      }, 180);
+    };
+
+    try {
+      pagefind = await import(/* @vite-ignore */ pagefindPath);
+      status.textContent = '输入关键词，或者直接选择一个分类开始检索。';
+      if (initialQuery || initialCategory) {
+        await runSearch();
+      }
+    } catch (error) {
+      console.error(error);
+      input.disabled = true;
+      categorySelect.disabled = true;
+      status.innerHTML = '当前是开发模式，搜索索引会在执行 <code>npm run build</code> 后生成。';
+    }
+
+    input.addEventListener('input', debounceSearch);
+    categorySelect.addEventListener('change', () => {
+      void runSearch();
+    });
+  </script>
+</BaseLayout>
+

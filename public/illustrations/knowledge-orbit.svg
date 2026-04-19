@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-label="knowledge orbit">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eef2ff" />
+      <stop offset="100%" stop-color="#dbeafe" />
+    </linearGradient>
+    <linearGradient id="planet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+  </defs>
+  <rect width="640" height="480" rx="40" fill="url(#bg)" />
+  <ellipse cx="320" cy="240" rx="225" ry="95" fill="none" stroke="#94a3b8" stroke-width="6" stroke-dasharray="12 16" />
+  <ellipse cx="320" cy="240" rx="160" ry="180" fill="none" stroke="#c7d2fe" stroke-width="6" />
+  <circle cx="320" cy="240" r="88" fill="url(#planet)" />
+  <circle cx="320" cy="240" r="62" fill="#ffffff" opacity="0.2" />
+  <circle cx="520" cy="220" r="20" fill="#f59e0b" />
+  <circle cx="202" cy="110" r="16" fill="#22c55e" />
+  <circle cx="252" cy="398" r="18" fill="#ec4899" />
+  <path d="M288 214h64M288 240h64M288 266h64" stroke="#ffffff" stroke-linecap="round" stroke-width="10" />
+</svg>
+

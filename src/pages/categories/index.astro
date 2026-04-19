@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryList from '../../components/CategoryList.astro';
+import { getAllCategories, getCategoryCount, getVisiblePosts, slugify } from '../../lib/blog';
+
+const posts = getVisiblePosts(await getCollection('blog'));
+const categoryCount = getCategoryCount(posts);
+const categories = getAllCategories(posts).map((name) => ({
+  name,
+  count: categoryCount[name],
+  slug: slugify(name),
+}));
+---
+
+<BaseLayout title="分类" description="按主题浏览文章">
+  <section class="page-heading">
+    <p class="eyebrow">Categories</p>
+    <h1>分类归档</h1>
+    <p>可以按主题整理你的博客，也方便以后继续扩展成系列文章。</p>
+  </section>
+
+  <CategoryList categories={categories} />
+</BaseLayout>
+

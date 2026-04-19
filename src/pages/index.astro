@@ -1,0 +1,76 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import CategoryList from '../components/CategoryList.astro';
+import { getAllCategories, getCategoryCount, getVisiblePosts, slugify } from '../lib/blog';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../lib/site';
+
+const posts = getVisiblePosts(await getCollection('blog'));
+const latestPosts = posts.slice(0, 3);
+const categoryCount = getCategoryCount(posts);
+const categories = getAllCategories(posts).map((name) => ({
+  name,
+  count: categoryCount[name],
+  slug: slugify(name),
+}));
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <section class="hero-panel">
+    <div>
+      <p class="eyebrow">Markdown 驱动的个人博客</p>
+      <h1>用一套站点，同时管理写作、插图、公式和检索。</h1>
+      <p class="hero-copy">
+        这个网站基于 Astro 构建，支持 Markdown / MDX 写作、LaTeX 公式渲染、分类归档与全文检索，并默认鼓励使用更适合
+        微信公众号同步的纯 Markdown 写作方式。
+      </p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="/blog/">开始阅读</a>
+        <a class="button button-secondary" href="/guide/">写作规范</a>
+        <a class="button button-secondary" href="/search/">试试检索</a>
+      </div>
+    </div>
+    <img
+      class="hero-illustration"
+      src="/illustrations/knowledge-orbit.svg"
+      alt="一个围绕中心旋转的知识星系插图"
+      loading="lazy"
+    />
+  </section>
+
+  <section class="section-block">
+    <div class="section-heading">
+      <h2>最近更新</h2>
+      <a href="/blog/">查看全部</a>
+    </div>
+    <div class="stack-grid">
+      {latestPosts.map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="section-heading">
+      <h2>分类导航</h2>
+      <a href="/categories/">全部分类</a>
+    </div>
+    <CategoryList categories={categories} />
+  </section>
+
+  <section class="section-block">
+    <div class="section-heading">
+      <h2>双端发布建议</h2>
+      <a href="/guide/">查看规范</a>
+    </div>
+    <article class="post-card">
+      <div class="post-card-meta">
+        <span class="chip">公众号友好</span>
+        <span>推荐默认做法</span>
+      </div>
+      <h2><a href="/guide/">先写纯 Markdown，再分别输出到网站和公众号</a></h2>
+      <p>
+        默认优先使用 <code>.md</code>、标准标题层级、引用块和常规图片排版；把自定义 MDX 组件和复杂布局留给网站专用文章。
+      </p>
+    </article>
+  </section>
+</BaseLayout>

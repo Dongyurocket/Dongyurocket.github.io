@@ -1,0 +1,25 @@
+{
+  "name": "personal-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "local": "node scripts/local-site.mjs",
+    "build": "astro build",
+    "postbuild": "pagefind --site dist",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.4",
+    "@astrojs/sitemap": "^3.5.1",
+    "astro": "^5.13.5",
+    "katex": "^0.16.22",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0"
+  },
+  "devDependencies": {
+    "pagefind": "^1.5.2"
+  }
+}
