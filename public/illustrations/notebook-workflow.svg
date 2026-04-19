@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="research notebook workflow">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#eef2ff" />
+    </linearGradient>
+    <linearGradient id="panel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f8fbff" />
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" rx="36" fill="url(#bg)" />
+  <rect x="48" y="42" width="864" height="456" rx="28" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+  <rect x="82" y="90" width="220" height="110" rx="22" fill="url(#panel)" stroke="#6366f1" stroke-width="3" />
+  <rect x="370" y="90" width="220" height="110" rx="22" fill="url(#panel)" stroke="#22c55e" stroke-width="3" />
+  <rect x="658" y="90" width="220" height="110" rx="22" fill="url(#panel)" stroke="#f59e0b" stroke-width="3" />
+  <rect x="82" y="260" width="220" height="110" rx="22" fill="url(#panel)" stroke="#ec4899" stroke-width="3" />
+  <rect x="370" y="260" width="220" height="110" rx="22" fill="url(#panel)" stroke="#0ea5e9" stroke-width="3" />
+  <rect x="658" y="260" width="220" height="110" rx="22" fill="url(#panel)" stroke="#8b5cf6" stroke-width="3" />
+  <text x="110" y="130" font-size="28" font-family="Segoe UI, Arial, sans-serif" font-weight="700" fill="#312e81">问题定义</text>
+  <text x="110" y="164" font-size="18" font-family="Segoe UI, Arial, sans-serif" fill="#475569">目标、假设、边界</text>
+  <text x="398" y="130" font-size="28" font-family="Segoe UI, Arial, sans-serif" font-weight="700" fill="#166534">资料整理</text>
+  <text x="398" y="164" font-size="18" font-family="Segoe UI, Arial, sans-serif" fill="#475569">文献、数据、引用</text>
+  <text x="686" y="130" font-size="28" font-family="Segoe UI, Arial, sans-serif" font-weight="700" fill="#92400e">实验设计</text>
+  <text x="686" y="164" font-size="18" font-family="Segoe UI, Arial, sans-serif" fill="#475569">变量、步骤、指标</text>
+  <text x="110" y="300" font-size="28" font-family="Segoe UI, Arial, sans-serif" font-weight="700" fill="#9d174d">结果记录</text>
+  <text x="110" y="334" font-size="18" font-family="Segoe UI, Arial, sans-serif" fill="#475569">观察、表格、截图</text>
+  <text x="398" y="300" font-size="28" font-family="Segoe UI, Arial, sans-serif" font-weight="700" fill="#075985">分析与公式</text>
+  <text x="398" y="334" font-size="18" font-family="Segoe UI, Arial, sans-serif" fill="#475569">模型、推导、误差</text>
+  <text x="686" y="300" font-size="28" font-family="Segoe UI, Arial, sans-serif" font-weight="700" fill="#5b21b6">结论与行动</text>
+  <text x="686" y="334" font-size="18" font-family="Segoe UI, Arial, sans-serif" fill="#475569">结论、问题、下一步</text>
+  <path d="M302 145H370" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" />
+  <path d="M590 145H658" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" />
+  <path d="M480 200V260" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" />
+  <path d="M302 315H370" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" />
+  <path d="M590 315H658" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" />
+  <circle cx="336" cy="145" r="10" fill="#94a3b8" />
+  <circle cx="624" cy="145" r="10" fill="#94a3b8" />
+  <circle cx="480" cy="230" r="10" fill="#94a3b8" />
+  <circle cx="336" cy="315" r="10" fill="#94a3b8" />
+  <circle cx="624" cy="315" r="10" fill="#94a3b8" />
+</svg>
+
