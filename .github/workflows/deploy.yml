@@ -16,10 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     env:
       SITE_URL: ${{ format('https://{0}.github.io', github.repository_owner) }}
@@ -27,8 +24,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: withastro/action@v4
+      - name: Build and upload site
+        uses: withastro/action@v5
         with:
           path: .
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy uploaded artifact to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
