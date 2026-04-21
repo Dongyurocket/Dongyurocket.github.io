@@ -43,12 +43,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <li>很长的代码块和并排图文混排</li>
       </ul>
 
+      <h2>内容分层</h2>
+      <ul>
+        <li><code>src/content/blog</code>：公开文章，会进入博客路由、归档、分类、检索和公众号导出流程</li>
+        <li><code>src/content/notes</code>：私有或草稿型笔记，不生成公开页面，也不参与公众号导出</li>
+        <li>当一份笔记整理成熟后，再迁移到 <code>blog</code>，补齐公开文章需要的 frontmatter</li>
+      </ul>
+
       <h2>建议工作流</h2>
       <ol>
-        <li>先运行 <code>npm run new:post -- "文章标题"</code> 生成一份新文章模板</li>
-        <li>在 <code>src/content/blog</code> 里完成一份纯 Markdown 正文</li>
-        <li>用本地网站检查结构、图片、分类和公式显示</li>
-        <li>需要发公众号时，先运行 <code>npm run export:wechat -- 文章slug</code></li>
+        <li>想直接公开发布的内容，先运行 <code>npm run new:post -- "文章标题"</code></li>
+        <li>只是记录、摘抄或草稿整理的内容，先运行 <code>npm run new:note -- "笔记标题"</code></li>
+        <li>公开文章放在 <code>src/content/blog</code>，并用本地网站检查结构、图片、分类和公式显示</li>
+        <li>需要发公众号时，只对 <code>blog</code> 文章运行 <code>npm run export:wechat -- 文章slug</code></li>
+        <li><code>notes</code> 整理成熟后，再迁移到 <code>blog</code> 做公开发布</li>
         <li>再把导出的 Markdown 导入公众号 Markdown 编辑器</li>
         <li>在公众号后台重新上传图片，并做一次手机端预览</li>
       </ol>
@@ -57,7 +65,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <ul>
         <li><code>templates/blog-post.md</code>：适合长期写作和公众号同步的默认文章模板</li>
         <li><code>templates/blog-post.mdx</code>：适合网站专用增强效果的模板</li>
+        <li><code>templates/note.md</code>：适合私有或草稿型笔记的默认模板</li>
         <li><code>scripts/new-post.mjs</code>：生成新文章草稿</li>
+        <li><code>scripts/new-note.mjs</code>：生成新笔记草稿</li>
         <li><code>scripts/export-wechat.mjs</code>：导出公众号友好的 Markdown 版本</li>
       </ul>
 

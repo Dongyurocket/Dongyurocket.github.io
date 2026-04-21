@@ -22,6 +22,10 @@ const wechatPosts = getWechatReadyPosts(posts);
       <h2>推荐命令</h2>
       <pre><code>npm run new:post -- "文章标题"</code></pre>
       <pre><code>npm run export:wechat -- 文章slug</code></pre>
+      <p>
+        这条导出链路只面向 <code>src/content/blog</code> 下的公开文章；<code>src/content/notes</code>
+        默认不参与公众号导出。
+      </p>
 
       <h2>默认规则</h2>
       <ul>

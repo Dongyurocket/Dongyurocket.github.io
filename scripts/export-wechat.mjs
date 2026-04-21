@@ -6,7 +6,7 @@ import {
   readFileSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname, extname, join, relative, resolve } from 'node:path';
+import { dirname, extname, isAbsolute, join, relative, resolve } from 'node:path';
 
 const root = process.cwd();
 const contentDir = resolve(root, 'src/content/blog');
@@ -15,8 +15,13 @@ const siteUrl = (process.env.SITE_URL ?? 'https://dongyurocket.github.io').repla
 const input = process.argv[2];
 
 if (!input) {
-  console.error('用法：npm run export:wechat -- 文章slug或文件路径');
+  console.error('用法：npm run export:wechat -- blog中的文章slug或文件路径');
   process.exit(1);
+}
+
+function isPathInsideDirectory(directory, targetPath) {
+  const relativePath = relative(directory, targetPath);
+  return relativePath === '' || (!relativePath.startsWith('..') && !isAbsolute(relativePath));
 }
 
 function walk(directory) {
@@ -146,6 +151,11 @@ const sourcePath = findSourcePath(input);
 
 if (!sourcePath) {
   console.error(`未找到文章：${input}`);
+  process.exit(1);
+}
+
+if (!isPathInsideDirectory(contentDir, sourcePath)) {
+  console.error('仅支持导出 src/content/blog 下的公开文章；src/content/notes 不在公众号导出范围内。');
   process.exit(1);
 }
 

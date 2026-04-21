@@ -4,3 +4,6 @@ dist
 .DS_Store
 .local-*.log
 exports/wechat
+src/content/.obsidian/
+src/content/notes/**
+!src/content/notes/.gitkeep

@@ -9,6 +9,7 @@
 - 本地写作与预览
 - 发布到 GitHub Pages
 - 使用 Markdown / MDX 写博客
+- 将公开文章与私有笔记分开管理
 - 使用 LaTeX 编写公式
 - 按分类和归档管理文章
 - 做全文检索
@@ -28,7 +29,7 @@
 
 这套项目的核心思想是：
 
-> **内容优先放在 Markdown 文件里，网站负责展示和检索，公众号通过导出流程做二次排版。**
+> **内容优先放在 Markdown 文件里：blog 负责公开展示，notes 负责私有沉淀，公众号通过 blog 导出流程做二次排版。**
 
 ---
 
@@ -48,6 +49,7 @@
 ### 2.2 写作功能
 
 - 支持 `.md` 和 `.mdx`
+- 支持 `blog` / `notes` 双内容分层
 - 支持 Markdown 标题、列表、引用、表格、代码块
 - 支持 LaTeX 公式
 - 支持插图 / 图片
@@ -58,8 +60,9 @@
 
 ### 2.3 工作流功能
 
-- 一键本地打开网站
+- 标准本地开发与预览命令
 - 一键新建文章模板
+- 一键新建笔记模板
 - 一键导出公众号版本 Markdown
 - 一键构建静态站点
 - 自动部署到 GitHub Pages
@@ -89,14 +92,14 @@
 │  ├─ favicon.svg
 │  └─ illustrations/             # 站点静态图片、插图
 ├─ scripts/
-│  ├─ local-site.mjs             # 本地一键打开网站
 │  ├─ new-post.mjs               # 新建文章模板
-│  ├─ export-wechat.mjs          # 导出公众号 Markdown
-│  └─ start-local-site.ps1       # Windows 本地启动器
+│  ├─ new-note.mjs               # 新建笔记模板
+│  └─ export-wechat.mjs          # 导出公众号 Markdown
 ├─ src/
 │  ├─ components/                # 组件
 │  ├─ content/
-│  │  └─ blog/                   # 博客文章内容
+│  │  ├─ blog/                   # 公开博客文章
+│  │  └─ notes/                  # 私有或草稿型笔记
 │  ├─ layouts/                   # 页面布局
 │  ├─ lib/                       # 站点配置、文章工具函数
 │  ├─ pages/                     # 路由页面
@@ -104,8 +107,8 @@
 │  └─ content.config.ts          # 内容模型定义
 ├─ templates/
 │  ├─ blog-post.md               # 默认长期写作模板
-│  └─ blog-post.mdx              # 网站专用增强模板
-├─ start-local-site.cmd          # Windows 双击启动入口
+│  ├─ blog-post.mdx              # 网站专用增强模板
+│  └─ note.md                    # 私有笔记模板
 ├─ astro.config.mjs              # Astro 主配置
 ├─ package.json                  # npm scripts
 └─ README.md
@@ -167,41 +170,25 @@ npm install
 
 ## 8. 本地运行方式
 
-### 8.1 普通开发模式
+### 8.1 开发模式
 
 ```bash
 npm run dev
 ```
 
-默认会启动一个本地开发服务器。
-
-### 8.2 一键本地打开网站
-
-```bash
-npm run local
-```
-
-这个命令会：
-
-- 检查本地站点是否已经在运行
-- 如果没运行，就自动启动本地开发服务器
-- 自动打开浏览器
-
-默认打开地址：
+默认会启动一个本地开发服务器，通常访问地址为：
 
 ```text
 http://127.0.0.1:4321/
 ```
 
-### 8.3 Windows 双击启动
+### 8.2 本地预览生产版本
 
-如果你不想手动输命令，可以直接双击：
-
-```text
-start-local-site.cmd
+```bash
+npm run preview
 ```
 
-它会调用 PowerShell 启动器，在 Windows 上更稳。
+需要先执行 `npm run build`。
 
 ---
 
@@ -213,13 +200,7 @@ start-local-site.cmd
 npm run dev
 ```
 
-### 9.2 一键打开本地站点
-
-```bash
-npm run local
-```
-
-### 9.3 新建文章
+### 9.2 新建文章
 
 ```bash
 npm run new:post -- "文章标题"
@@ -229,6 +210,18 @@ npm run new:post -- "文章标题"
 
 ```bash
 npm run new:post -- "文章标题" custom-slug
+```
+
+### 9.3 新建笔记
+
+```bash
+npm run new:note -- "笔记标题"
+```
+
+也可以自己指定 slug：
+
+```bash
+npm run new:note -- "笔记标题" custom-slug
 ```
 
 ### 9.4 导出公众号版本
@@ -257,13 +250,15 @@ npm run preview
 
 ---
 
-## 10. 写作入口：文章存放在哪里
+## 10. 写作入口：blog 与 notes 存放在哪里
 
-你的博客文章都放在：
+### 10.1 公开文章
 
 ```text
 src/content/blog
 ```
+
+这里放的是会参与公开站点展示的文章。
 
 你可以直接手动创建 `.md` 或 `.mdx` 文件，也可以使用：
 
@@ -273,19 +268,42 @@ npm run new:post -- "文章标题"
 
 自动生成。
 
+### 10.2 私有或草稿型笔记
+
+```text
+src/content/notes
+```
+
+这里放的是你自己的笔记库、资料整理、摘抄、草稿或尚未准备公开发布的内容。
+
+推荐使用：
+
+```bash
+npm run new:note -- "笔记标题"
+```
+
+说明：
+
+- `notes` 默认不会生成公开页面
+- `notes` 不参与分类、归档、搜索和公众号导出
+- `notes` 默认通过 `.gitignore` 排除，不会同步到 GitHub
+- 当某份笔记整理成熟后，再迁移到 `src/content/blog`
+
 ---
 
 ## 11. 推荐的长期写作流程
 
-这是这个项目最推荐的使用方式：
+这是这个项目最推荐的双轨使用方式：
 
-### 第一步：新建一篇文章
+### 11.1 公开文章流程
+
+#### 第一步：新建一篇文章
 
 ```bash
 npm run new:post -- "文章标题"
 ```
 
-### 第二步：优先使用 Markdown 完成正文
+#### 第二步：优先使用 Markdown 完成正文
 
 默认推荐：
 
@@ -293,10 +311,10 @@ npm run new:post -- "文章标题"
 - 用标准 Markdown 结构
 - 尽量少依赖站点专用组件
 
-### 第三步：本地预览
+#### 第三步：启动本地开发服务器
 
 ```bash
-npm run local
+npm run dev
 ```
 
 用网站检查：
@@ -307,19 +325,43 @@ npm run local
 - 公式是否显示正确
 - 文章结构是否清晰
 
-### 第四步：需要发公众号时导出
+#### 第四步：需要发公众号时导出
 
 ```bash
 npm run export:wechat -- 文章slug
 ```
 
-### 第五步：导入公众号编辑器
+#### 第五步：导入公众号编辑器
 
 把 `exports/wechat` 中导出的 Markdown 拿去公众号 Markdown 编辑器排版，然后再做最终人工检查。
 
+### 11.2 私有或草稿笔记流程
+
+#### 第一步：新建一份笔记
+
+```bash
+npm run new:note -- "笔记标题"
+```
+
+#### 第二步：在 `src/content/notes` 中持续记录
+
+适合放：
+
+- 摘抄
+- 会议记录
+- 项目草稿
+- 研究过程笔记
+- 尚未准备公开的想法
+
+这些内容默认只保留在本地工作区，不会进入 GitHub 仓库。
+
+#### 第三步：整理成熟后再迁移到 blog
+
+当内容已经具备公开价值时，再复制或迁移到 `src/content/blog`，并补齐公开文章需要的 frontmatter 字段。
+
 ---
 
-## 12. 文章模板
+## 12. 内容模板
 
 ### 12.1 默认长期写作模板
 
@@ -362,9 +404,34 @@ templates/blog-post.mdx
 - 默认 `wechatReady: false`
 - 这类文章不建议默认同步到公众号
 
+### 12.3 私有笔记模板
+
+文件：
+
+```text
+templates/note.md
+```
+
+适合：
+
+- 私有资料整理
+- 草稿型笔记
+- 暂时不公开的研究记录
+- 还没整理成文章的想法
+
+特点：
+
+- 默认写入 `src/content/notes`
+- 默认 `draft: true`
+- 默认 `private: true`
+- 不参与公开站点与公众号导出流程
+- 默认不参与 GitHub 同步
+
 ---
 
 ## 13. Frontmatter 字段说明
+
+### 13.1 blog 文章
 
 当前博客文章支持以下 frontmatter 字段：
 
@@ -424,6 +491,46 @@ draft: false
 
 - `draft`
   - 草稿；为 `true` 时不会出现在公开页面
+
+### 13.2 notes 笔记
+
+`notes` 的 frontmatter 更宽松，可以不写；如果你希望保留元数据，推荐使用：
+
+```yaml
+---
+title: "笔记标题"
+description: "这份笔记在记录什么，可选。"
+createdDate: 2026-04-21
+updatedDate: 2026-04-21
+tags:
+  - 待整理
+draft: true
+private: true
+---
+```
+
+说明：
+
+- `title`
+  - 可选；不给也可以，只是建议写上
+
+- `description`
+  - 可选；用于快速说明这份笔记在做什么
+
+- `createdDate`
+  - 可选；笔记建立时间
+
+- `updatedDate`
+  - 可选；最近整理时间
+
+- `tags`
+  - 可选；方便你自己做标签整理
+
+- `draft`
+  - 默认 `true`；表示这仍是一份草稿型内容
+
+- `private`
+  - 默认 `true`；表示这份内容默认不面向公开发布
 
 ---
 
@@ -563,6 +670,8 @@ src/content/blog/rich-notes-example-files/notebook-workflow.svg
 ```bash
 npm run export:wechat -- 文章slug
 ```
+
+注意：这里只支持导出 `src/content/blog` 下的公开文章，不支持直接导出 `src/content/notes`。
 
 例如文章文件：
 
@@ -858,10 +967,10 @@ npm run new:post -- "如何建立长期写作系统"
 
 打开 `src/content/blog` 里刚生成的文件，开始写正文。
 
-### 第三步：本地预览
+### 第三步：启动本地开发服务器
 
 ```bash
-npm run local
+npm run dev
 ```
 
 ### 第四步：检查页面效果
@@ -890,6 +999,14 @@ npm run export:wechat -- writing-system
 ### 第六步：导入公众号编辑器
 
 把 `exports/wechat/writing-system.md` 拿去公众号 Markdown 编辑器做最终排版。
+
+### 如果只是先记草稿
+
+```bash
+npm run new:note -- "长期写作系统草稿"
+```
+
+这类内容会进入 `src/content/notes`，不会马上出现在公开站点里。
 
 ---
 
@@ -966,6 +1083,19 @@ npm run preview
 - 网站和公众号尽量共用同一份正文
 - 最终在公众号里做少量人工排版修正
 
+### Q6：`src/content/notes` 里的笔记会公开吗？
+
+不会。
+
+`notes` 默认：
+
+- 不生成公开页面
+- 不参与分类、归档和搜索
+- 不参与公众号导出
+- 不参与 GitHub 同步
+
+如果你想公开发布某份笔记，需要把它整理后迁移到 `src/content/blog`。
+
 ---
 
 ## 26. 建议你接下来做的事
@@ -975,7 +1105,7 @@ npm run preview
 1. 修改 `src/lib/site.ts` 里的站点标题、作者信息和描述
 2. 修改首页文案，让它更像你自己的站点
 3. 删除示例文章，换成你的第一批正式文章
-4. 优先用 `npm run new:post -- "文章标题"` 开始写
+4. 公开文章用 `npm run new:post -- "文章标题"`，私有记录用 `npm run new:note -- "笔记标题"`
 5. 发布到 GitHub Pages 后，把导出流程纳入你的公众号工作流
 
 ---

@@ -17,8 +17,8 @@ export const HOME_HIGHLIGHTS = [
     description: '把博客当作长期积累，而不是一次性发布页面。',
   },
   {
-    title: 'Markdown 为中心',
-    description: '内容优先沉淀在 Markdown，网站和公众号都围绕同一份正文展开。',
+    title: 'Blog / Notes 分层',
+    description: '公开文章放在 blog，私有或草稿笔记放在 notes，避免内容边界混乱。',
   },
   {
     title: '双端同步',
@@ -27,10 +27,10 @@ export const HOME_HIGHLIGHTS = [
 ];
 
 export const WRITING_WORKFLOW = [
-  '先用 `npm run new:post -- "文章标题"` 生成一篇新文章草稿',
-  '优先用 `.md` 写正文，把特殊交互留给网站专用文章',
-  '本地用网站检查标题、摘要、插图、分类和公式显示',
-  '需要发公众号时，用 `npm run export:wechat -- 文章slug` 导出公众号版本',
+  '公开文章用 `npm run new:post -- "文章标题"`，私有或草稿笔记用 `npm run new:note -- "笔记标题"`',
+  '公开内容写在 `src/content/blog`，私有笔记写在 `src/content/notes`',
+  '优先用 `.md` 写正文，把特殊交互留给少数网站专用文章',
+  '需要公开发布时，再把 notes 整理到 blog；需要发公众号时，只导出 blog 文章',
 ];
 
 export const WECHAT_SYNC_RULES = [

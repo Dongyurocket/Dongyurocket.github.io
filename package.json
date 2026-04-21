@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "local": "node scripts/local-site.mjs",
     "new:post": "node scripts/new-post.mjs",
+    "new:note": "node scripts/new-note.mjs",
     "export:wechat": "node scripts/export-wechat.mjs",
     "build": "astro build",
     "postbuild": "pagefind --site dist",
