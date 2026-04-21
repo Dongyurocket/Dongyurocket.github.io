@@ -47,6 +47,5 @@ export const NAV_LINKS = [
   { href: '/archives/', label: '归档' },
   { href: '/categories/', label: '分类' },
   { href: '/about/', label: '关于' },
-  { href: '/wechat/', label: '微信同步' },
   { href: '/search/', label: '检索' },
 ];

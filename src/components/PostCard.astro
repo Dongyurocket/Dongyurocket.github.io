@@ -16,7 +16,6 @@ const readingMinutes = estimateReadingMinutes(post.body);
       {post.data.category}
     </a>
     {post.data.featured && <span class="chip chip-warm">精选</span>}
-    {post.data.wechatReady && <span class="chip chip-neutral">可同步公众号</span>}
     <time datetime={post.data.pubDate.toISOString()}>
       {formatDate(post.data.pubDate)}
     </time>

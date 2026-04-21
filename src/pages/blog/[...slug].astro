@@ -4,7 +4,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
   estimateReadingMinutes,
   formatDate,
-  getPostUrl,
   getVisiblePosts,
   slugify,
 } from '../../lib/blog';
@@ -22,7 +21,6 @@ const { Content } = await render(post);
 const publishDate = formatDate(post.data.pubDate);
 const updateDate = post.data.updatedDate ? formatDate(post.data.updatedDate) : null;
 const readingMinutes = estimateReadingMinutes(post.body);
-const exportCommand = `npm run export:wechat -- ${post.id}`;
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>

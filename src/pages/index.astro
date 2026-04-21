@@ -9,7 +9,6 @@ import {
   getCategoryCount,
   getFeaturedPosts,
   getVisiblePosts,
-  getWechatReadyPosts,
   slugify,
 } from '../lib/blog';
 import { HOME_HIGHLIGHTS, SITE_DESCRIPTION, SITE_TITLE, WRITING_WORKFLOW } from '../lib/site';
@@ -17,7 +16,6 @@ import { HOME_HIGHLIGHTS, SITE_DESCRIPTION, SITE_TITLE, WRITING_WORKFLOW } from 
 const posts = getVisiblePosts(await getCollection('blog'));
 const featuredPosts = getFeaturedPosts(posts).slice(0, 2);
 const latestPosts = posts.slice(0, 3);
-const wechatReadyCount = getWechatReadyPosts(posts).length;
 const categoryCount = getCategoryCount(posts);
 const categories = getAllCategories(posts).map((name) => ({
   name,
@@ -37,7 +35,6 @@ const categories = getAllCategories(posts).map((name) => ({
       <div class="hero-actions">
         <a class="button button-primary" href="/blog/">开始阅读</a>
         <a class="button button-secondary" href="/about/">关于我</a>
-        <a class="button button-secondary" href="/wechat/">微信同步</a>
         <a class="button button-secondary" href="/search/">试试检索</a>
       </div>
     </div>
@@ -57,10 +54,6 @@ const categories = getAllCategories(posts).map((name) => ({
     <article class="stats-card">
       <strong>{categories.length}</strong>
       <span>主题分类</span>
-    </article>
-    <article class="stats-card">
-      <strong>{wechatReadyCount}</strong>
-      <span>可同步公众号文章</span>
     </article>
   </section>
 
@@ -119,22 +112,5 @@ const categories = getAllCategories(posts).map((name) => ({
       <a href="/categories/">全部分类</a>
     </div>
     <CategoryList categories={categories} />
-  </section>
-
-  <section class="section-block">
-    <div class="section-heading">
-      <h2>双端发布建议</h2>
-      <a href="/wechat/">查看微信同步流程</a>
-    </div>
-    <article class="post-card">
-      <div class="post-card-meta">
-        <span class="chip">公众号友好</span>
-        <span>推荐默认做法</span>
-      </div>
-      <h2><a href="/wechat/">先写纯 Markdown，再分别输出到网站和公众号</a></h2>
-      <p>
-        默认优先使用 <code>.md</code>、标准标题层级、引用块和常规图片排版；需要同步公众号时，直接运行 <code>npm run export:wechat -- 文章slug</code>。
-      </p>
-    </article>
   </section>
 </BaseLayout>
