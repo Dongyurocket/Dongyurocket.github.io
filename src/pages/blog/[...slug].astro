@@ -55,22 +55,6 @@ const exportCommand = `npm run export:wechat -- ${post.id}`;
       }
     </header>
 
-    {
-      post.data.wechatReady && (
-        <aside class="inline-note">
-          <strong>微信同步建议</strong>
-          <p>这篇文章适合导出为公众号版本。你可以在项目根目录执行：</p>
-          <pre><code>{exportCommand}</code></pre>
-          <p>
-            导出后的文件会写入 <code>exports/wechat</code>，并自动把站内根路径链接改成公开站点地址。
-          </p>
-          <p>
-            原文永久链接：<a href={getPostUrl(post)}>{getPostUrl(post)}</a>
-          </p>
-        </aside>
-      )
-    }
-
     <div class="article-content">
       <Content components={{}} />
     </div>
