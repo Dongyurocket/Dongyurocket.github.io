@@ -478,13 +478,19 @@ pre {
 .article-content {
   max-width: 74ch;
   font-size: 1.05rem;
+  overflow-wrap: break-word;
 }
 
 .article-content h2,
 .article-content h3,
 .article-content h4 {
   line-height: 1.25;
-  margin-top: 2rem;
+  margin-top: 2.2rem;
+}
+
+.article-content h2 {
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-soft);
 }
 
 .article-content p,
@@ -521,12 +527,31 @@ pre {
   border-collapse: collapse;
   overflow: hidden;
   border-radius: 16px;
+  border: 1px solid var(--line);
+  margin: 1.2rem 0;
+  font-size: 0.95rem;
 }
 
-.article-content th,
+.article-content th {
+  padding: 0.75rem 0.9rem;
+  background: var(--accent-soft);
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
 .article-content td {
-  padding: 0.8rem;
-  border: 1px solid var(--line);
+  padding: 0.65rem 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.article-content th + th,
+.article-content td + td {
+  border-left: 1px solid var(--line);
+}
+
+.article-content tr:hover td {
+  background: var(--accent-soft);
 }
 
 .inline-note {
