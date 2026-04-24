@@ -22,11 +22,13 @@ const categories = getAllCategories(posts).map((name) => ({
   count: categoryCount[name],
   slug: slugify(name),
 }));
+const topCategories = [...categories].sort((left, right) => right.count - left.count).slice(0, 5);
+const featuredLead = featuredPosts[0] ?? latestPosts[0];
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-  <section class="hero-panel">
-    <div>
+  <section class="home-hero">
+    <div class="hero-copy-block">
       <p class="eyebrow">Markdown 驱动的个人博客</p>
       <h1>用一套站点，同时管理写作、插图、公式和检索。</h1>
       <p class="hero-copy">
@@ -34,41 +36,60 @@ const categories = getAllCategories(posts).map((name) => ({
       </p>
       <div class="hero-actions">
         <a class="button button-primary" href="/blog/">开始阅读</a>
-        <a class="button button-secondary" href="/about/">关于我</a>
         <a class="button button-secondary" href="/search/">试试检索</a>
       </div>
+
+      <form class="hero-search" action="/search/" method="get" role="search">
+        <label class="visually-hidden" for="home-search">搜索文章</label>
+        <input id="home-search" name="q" type="search" placeholder="搜索文章、标签、公式或项目关键词" />
+        <button class="button button-primary" type="submit">检索</button>
+      </form>
     </div>
-    <img
-      class="hero-illustration"
-      src="/illustrations/knowledge-orbit.svg"
-      alt="一个围绕中心旋转的知识星系插图"
-      loading="lazy"
-    />
+
+    <aside class="hero-feature" aria-label="站点概览">
+      <img
+        class="hero-illustration"
+        src="/illustrations/knowledge-orbit.svg"
+        alt="一个围绕中心旋转的知识星系插图"
+        loading="eager"
+      />
+      <div class="hero-metrics">
+        <span><strong>{posts.length}</strong> 篇文章</span>
+        <span><strong>{categories.length}</strong> 个分类</span>
+      </div>
+      {
+        featuredLead && (
+          <a class="featured-link" href={`/blog/${featuredLead.id}/`}>
+            <span>推荐阅读</span>
+            <strong>{featuredLead.data.title}</strong>
+          </a>
+        )
+      }
+    </aside>
   </section>
 
-  <section class="stats-grid">
-    <article class="stats-card">
-      <strong>{posts.length}</strong>
-      <span>已发布文章</span>
-    </article>
-    <article class="stats-card">
-      <strong>{categories.length}</strong>
-      <span>主题分类</span>
-    </article>
+  <section class="quick-links" aria-label="快速入口">
+    <a href="/archives/">
+      <span>时间线</span>
+      <strong>按年份回看全部内容</strong>
+    </a>
+    <a href="/categories/">
+      <span>主题导航</span>
+      <strong>从分类进入长期专题</strong>
+    </a>
+    <a href="/guide/">
+      <span>写作规范</span>
+      <strong>保持网站与公众号同步</strong>
+    </a>
   </section>
 
-  <section class="section-block split-layout">
+  <section class="section-block editorial-grid">
     <AuthorCard title="这是一个适合长期写作的起点" />
-    <div class="panel-stack">
-      <article class="post-card">
-        <div class="section-heading">
-          <h2>写作节奏</h2>
-          <a href="/guide/">完整规范</a>
-        </div>
-        <ol class="step-list">
-          {WRITING_WORKFLOW.map((step) => <li>{step}</li>)}
-        </ol>
-      </article>
+    <div class="writing-system">
+      <div class="section-heading">
+        <h2>写作系统</h2>
+        <a href="/guide/">完整规范</a>
+      </div>
       <div class="feature-grid">
         {
           HOME_HIGHLIGHTS.map((item) => (
@@ -79,6 +100,9 @@ const categories = getAllCategories(posts).map((name) => ({
           ))
         }
       </div>
+      <ol class="step-list process-list">
+        {WRITING_WORKFLOW.slice(0, 3).map((step) => <li>{step}</li>)}
+      </ol>
     </div>
   </section>
 
@@ -111,6 +135,6 @@ const categories = getAllCategories(posts).map((name) => ({
       <h2>分类导航</h2>
       <a href="/categories/">全部分类</a>
     </div>
-    <CategoryList categories={categories} />
+    <CategoryList categories={topCategories.length > 0 ? topCategories : categories} />
   </section>
 </BaseLayout>

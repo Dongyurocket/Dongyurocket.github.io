@@ -16,7 +16,7 @@ const pagefindPath = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
   </section>
 
   <section class="search-panel">
-    <div class="search-controls">
+    <form class="search-controls" role="search" data-search-form>
       <label class="field">
         <span>关键词</span>
         <input
@@ -35,9 +35,16 @@ const pagefindPath = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
           {categories.map((category) => <option value={category}>{category}</option>)}
         </select>
       </label>
+      <button class="button button-secondary search-reset" type="button" id="search-reset">重置</button>
+    </form>
+
+    <div class="quick-filter-list" aria-label="常用分类">
+      {categories.slice(0, 6).map((category) => (
+        <a class="chip chip-neutral" href={`/search/?category=${encodeURIComponent(category)}`}>{category}</a>
+      ))}
     </div>
 
-    <p class="search-status" id="search-status">
+    <p class="search-status" id="search-status" aria-live="polite">
       正在准备搜索索引……
     </p>
     <div class="search-results" id="search-results"></div>
@@ -46,6 +53,8 @@ const pagefindPath = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
   <script type="module" define:vars={{ pagefindPath }}>
     const input = document.querySelector('#search-input');
     const categorySelect = document.querySelector('#search-category');
+    const form = document.querySelector('[data-search-form]');
+    const resetButton = document.querySelector('#search-reset');
     const status = document.querySelector('#search-status');
     const results = document.querySelector('#search-results');
     const params = new URLSearchParams(window.location.search);
@@ -89,6 +98,15 @@ const pagefindPath = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
         .join('');
     };
 
+    const renderEmpty = (message) => {
+      results.innerHTML = `
+        <div class="empty-state">
+          <p>${message}</p>
+          <a class="text-link" href="/blog/">浏览全部文章</a>
+        </div>
+      `;
+    };
+
     const syncURL = () => {
       const nextParams = new URLSearchParams();
       if (input.value.trim()) nextParams.set('q', input.value.trim());
@@ -119,7 +137,7 @@ const pagefindPath = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
       });
 
       if (search.results.length === 0) {
-        results.innerHTML = '';
+        renderEmpty('没有找到匹配结果。');
         status.textContent = '没有找到匹配结果。';
         return;
       }
@@ -146,13 +164,23 @@ const pagefindPath = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
       console.error(error);
       input.disabled = true;
       categorySelect.disabled = true;
+      resetButton.disabled = true;
       status.innerHTML = '当前是开发模式，搜索索引会在执行 <code>npm run build</code> 后生成。';
     }
 
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      void runSearch();
+    });
     input.addEventListener('input', debounceSearch);
     categorySelect.addEventListener('change', () => {
       void runSearch();
     });
+    resetButton.addEventListener('click', () => {
+      input.value = '';
+      categorySelect.value = '';
+      void runSearch();
+      input.focus();
+    });
   </script>
 </BaseLayout>
-

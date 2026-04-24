@@ -2,10 +2,14 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
-import { getCategoryCount, getVisiblePosts } from '../../lib/blog';
+import { getAllCategories, getCategoryCount, getVisiblePosts } from '../../lib/blog';
 
 const posts = getVisiblePosts(await getCollection('blog'));
 const categoryCount = Object.keys(getCategoryCount(posts)).length;
+const categories = getAllCategories(posts);
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((left, right) =>
+  left.localeCompare(right, 'zh-CN'),
+);
 ---
 
 <BaseLayout title="博客" description="所有文章列表">
@@ -26,7 +30,162 @@ const categoryCount = Object.keys(getCategoryCount(posts)).length;
     </article>
   </section>
 
-  <div class="stack-grid">
+  <section class="filter-panel" aria-labelledby="blog-filter-title">
+    <div class="section-heading section-heading-compact">
+      <h2 id="blog-filter-title">筛选文章</h2>
+      <button class="button button-secondary button-compact" type="button" data-reset-filters>重置</button>
+    </div>
+
+    <form class="filter-controls" data-filter-form>
+      <label class="field">
+        <span>关键词</span>
+        <input
+          type="search"
+          name="q"
+          placeholder="搜索标题、摘要、分类或标签"
+          autocomplete="off"
+          data-filter-query
+        />
+      </label>
+
+      <label class="field">
+        <span>分类</span>
+        <select name="category" data-filter-category>
+          <option value="">全部分类</option>
+          {categories.map((category) => <option value={category}>{category}</option>)}
+        </select>
+      </label>
+
+      <label class="field">
+        <span>标签</span>
+        <select name="tag" data-filter-tag>
+          <option value="">全部标签</option>
+          {tags.map((tag) => <option value={tag}>{tag}</option>)}
+        </select>
+      </label>
+
+      <label class="field">
+        <span>排序</span>
+        <select name="sort" data-filter-sort>
+          <option value="newest">最新优先</option>
+          <option value="oldest">最早优先</option>
+          <option value="quick">短读优先</option>
+        </select>
+      </label>
+    </form>
+    <p class="filter-status" data-filter-status>共 {posts.length} 篇文章。</p>
+  </section>
+
+  <div class="stack-grid post-list" id="post-list">
     {posts.map((post) => <PostCard post={post} />)}
   </div>
+
+  <p class="empty-state" data-empty-state hidden>没有匹配的文章，可以减少筛选条件再试。</p>
+
+  <script>
+    const filterForm = document.querySelector('[data-filter-form]');
+    const queryInput = document.querySelector('[data-filter-query]');
+    const categorySelect = document.querySelector('[data-filter-category]');
+    const tagSelect = document.querySelector('[data-filter-tag]');
+    const sortSelect = document.querySelector('[data-filter-sort]');
+    const resetButton = document.querySelector('[data-reset-filters]');
+    const status = document.querySelector('[data-filter-status]');
+    const emptyState = document.querySelector('[data-empty-state]');
+    const postList = document.querySelector('#post-list');
+    const cards = Array.from(document.querySelectorAll('[data-post-card]'));
+    const params = new URLSearchParams(window.location.search);
+
+    const normalize = (value) => value.toLowerCase().trim();
+
+    const setInitialValue = (field, key) => {
+      if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement) {
+        field.value = params.get(key) ?? field.value;
+      }
+    };
+
+    setInitialValue(queryInput, 'q');
+    setInitialValue(categorySelect, 'category');
+    setInitialValue(tagSelect, 'tag');
+    setInitialValue(sortSelect, 'sort');
+
+    const syncURL = () => {
+      const nextParams = new URLSearchParams();
+      if (queryInput instanceof HTMLInputElement && queryInput.value.trim()) {
+        nextParams.set('q', queryInput.value.trim());
+      }
+      if (categorySelect instanceof HTMLSelectElement && categorySelect.value) {
+        nextParams.set('category', categorySelect.value);
+      }
+      if (tagSelect instanceof HTMLSelectElement && tagSelect.value) {
+        nextParams.set('tag', tagSelect.value);
+      }
+      if (sortSelect instanceof HTMLSelectElement && sortSelect.value !== 'newest') {
+        nextParams.set('sort', sortSelect.value);
+      }
+      const query = nextParams.toString();
+      window.history.replaceState({}, '', query ? `?${query}` : window.location.pathname);
+    };
+
+    const sortCards = (items) => {
+      const mode = sortSelect instanceof HTMLSelectElement ? sortSelect.value : 'newest';
+      return [...items].sort((left, right) => {
+        if (mode === 'oldest') {
+          return Number(left.dataset.date) - Number(right.dataset.date);
+        }
+        if (mode === 'quick') {
+          return Number(left.dataset.readingMinutes) - Number(right.dataset.readingMinutes);
+        }
+        return Number(right.dataset.date) - Number(left.dataset.date);
+      });
+    };
+
+    const applyFilters = () => {
+      const query = queryInput instanceof HTMLInputElement ? normalize(queryInput.value) : '';
+      const category = categorySelect instanceof HTMLSelectElement ? categorySelect.value : '';
+      const tag = tagSelect instanceof HTMLSelectElement ? tagSelect.value : '';
+
+      const matches = cards.filter((card) => {
+        const haystack = normalize(
+          `${card.dataset.title ?? ''} ${card.dataset.description ?? ''} ${card.dataset.category ?? ''} ${(card.dataset.tags ?? '').replaceAll('|', ' ')}`,
+        );
+        const categoryMatch = !category || card.dataset.category === category;
+        const tagMatch = !tag || (card.dataset.tags ?? '').split('|').includes(tag);
+        return (!query || haystack.includes(query)) && categoryMatch && tagMatch;
+      });
+
+      cards.forEach((card) => {
+        card.hidden = !matches.includes(card);
+      });
+      sortCards(matches).forEach((card) => postList?.append(card));
+
+      if (status) {
+        status.textContent = matches.length === cards.length
+          ? `共 ${cards.length} 篇文章。`
+          : `已筛选出 ${matches.length} / ${cards.length} 篇文章。`;
+      }
+      if (emptyState instanceof HTMLElement) {
+        emptyState.hidden = matches.length > 0;
+      }
+      syncURL();
+    };
+
+    filterForm?.addEventListener('input', applyFilters);
+    filterForm?.addEventListener('change', applyFilters);
+    resetButton?.addEventListener('click', () => {
+      if (filterForm instanceof HTMLFormElement) filterForm.reset();
+      applyFilters();
+      if (queryInput instanceof HTMLInputElement) queryInput.focus();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const target = event.target;
+      const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement;
+      if (event.key === '/' && !isTyping && queryInput instanceof HTMLInputElement) {
+        event.preventDefault();
+        queryInput.focus();
+      }
+    });
+
+    applyFilters();
+  </script>
 </BaseLayout>

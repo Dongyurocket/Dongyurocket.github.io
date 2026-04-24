@@ -15,11 +15,13 @@ const { categories } = Astro.props as Props;
     categories.map((category) => (
       <li class="category-card">
         <a href={`/categories/${category.slug}/`}>
-          <span class="category-name">{category.name}</span>
-          <span class="category-count">{category.count} 篇</span>
+          <span>
+            <span class="category-name">{category.name}</span>
+            <span class="category-count">{category.count} 篇文章</span>
+          </span>
+          <span class="category-arrow" aria-hidden="true">→</span>
         </a>
       </li>
     ))
   }
 </ul>
-

@@ -1,8 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="site icon">
-  <rect width="120" height="120" rx="28" fill="#4f46e5" />
+  <rect width="120" height="120" rx="24" fill="#0f766e" />
   <path
     d="M60 20L69.5 48.5L100 60L69.5 71.5L60 100L50.5 71.5L20 60L50.5 48.5L60 20Z"
     fill="#ffffff"
   />
 </svg>
-

@@ -10,17 +10,22 @@ import {
 
 export async function getStaticPaths() {
   const posts = getVisiblePosts(await getCollection('blog'));
-  return posts.map((post) => ({
+  return posts.map((post, index) => ({
     params: { slug: post.id },
-    props: { post },
+    props: {
+      post,
+      nextPost: posts[index - 1] ?? null,
+      previousPost: posts[index + 1] ?? null,
+    },
   }));
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { post, previousPost, nextPost } = Astro.props;
+const { Content, headings } = await render(post);
 const publishDate = formatDate(post.data.pubDate);
 const updateDate = post.data.updatedDate ? formatDate(post.data.updatedDate) : null;
 const readingMinutes = estimateReadingMinutes(post.body);
+const tocHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
@@ -31,30 +36,72 @@ const readingMinutes = estimateReadingMinutes(post.body);
     {post.data.tags.map((tag) => <meta data-pagefind-filter="tag[content]" content={tag} />)}
   </head>
 
-  <article class="article-shell" data-pagefind-body>
-    <header class="article-header">
-      <a class="chip chip-link" href={`/categories/${slugify(post.data.category)}/`}>
-        {post.data.category}
-      </a>
-      <h1 data-pagefind-meta="title">{post.data.title}</h1>
-      <p class="article-description">{post.data.description}</p>
-      <div class="article-meta">
-        <time datetime={post.data.pubDate.toISOString()}>发布于 {publishDate}</time>
-        <span>{readingMinutes} 分钟阅读</span>
-        {post.data.series && <span>系列：{post.data.series}</span>}
-        {updateDate && <span>更新于 {updateDate}</span>}
-      </div>
-      {
-        post.data.tags.length > 0 && (
-          <ul class="tag-list" aria-label="标签">
-            {post.data.tags.map((tag) => <li class="chip">{tag}</li>)}
-          </ul>
-        )
-      }
-    </header>
+  <div class:list={['article-layout', tocHeadings.length === 0 && 'article-layout-single']}>
+    <article class="article-shell" data-pagefind-body>
+      <header class="article-header">
+        <a class="chip chip-link" href={`/categories/${slugify(post.data.category)}/`}>
+          {post.data.category}
+        </a>
+        <h1 data-pagefind-meta="title">{post.data.title}</h1>
+        <p class="article-description">{post.data.description}</p>
+        <div class="article-meta">
+          <time datetime={post.data.pubDate.toISOString()}>发布于 {publishDate}</time>
+          <span>{readingMinutes} 分钟阅读</span>
+          {post.data.series && <span>系列：{post.data.series}</span>}
+          {updateDate && <span>更新于 {updateDate}</span>}
+        </div>
+        {
+          post.data.tags.length > 0 && (
+            <ul class="tag-list" aria-label="标签">
+              {post.data.tags.map((tag) => <li class="chip">{tag}</li>)}
+            </ul>
+          )
+        }
+      </header>
 
-    <div class="article-content">
-      <Content components={{}} />
-    </div>
-  </article>
+      <div class="article-content">
+        <Content components={{}} />
+      </div>
+
+      <nav class="post-neighbors" aria-label="相邻文章">
+        {
+          previousPost ? (
+            <a href={`/blog/${previousPost.id}/`}>
+              <span>上一篇</span>
+              <strong>{previousPost.data.title}</strong>
+            </a>
+          ) : (
+            <span></span>
+          )
+        }
+        {
+          nextPost ? (
+            <a href={`/blog/${nextPost.id}/`}>
+              <span>下一篇</span>
+              <strong>{nextPost.data.title}</strong>
+            </a>
+          ) : (
+            <span></span>
+          )
+        }
+      </nav>
+    </article>
+
+    {
+      tocHeadings.length > 0 && (
+        <aside class="article-aside">
+          <nav class="toc-panel" aria-label="文章目录">
+            <p>目录</p>
+            <ol>
+              {tocHeadings.map((heading) => (
+                <li class={`toc-depth-${heading.depth}`}>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </aside>
+      )
+    }
+  </div>
 </BaseLayout>
